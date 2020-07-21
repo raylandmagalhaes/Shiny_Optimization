@@ -10,6 +10,7 @@ Try executing this chunk by clicking the *Run* button within the chunk or by pla
 ```{r}
 dhsfajkdsh
 plot(cars)
+asildjfalsdjf
 aejadslfj 
 # erro fatal
 ```
