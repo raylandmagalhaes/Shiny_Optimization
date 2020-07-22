@@ -10,28 +10,70 @@ to the point that I can upload them to a free 1GB RAM server (shinyapps.io)
 
 Starting the process of optimization on an app can be quite rewarding if you start by the chunks of code that take more time to be processed. This is called collecting the low hanging fruits and can be easily achieved using the right tools.
 
-I'm going to pick an [app](https://github.com/raylandmagalhaes/Densidade_Gastos_Deputados) that I'm currently working on and needs improvement, but you can choose the one you want to optimize.
+I'm going to pick an app(https://github.com/raylandmagalhaes/Densidade_Gastos_Deputados) that I'm currently working on and needs improvement, but you can choose the one you want to optimize.
 
 We are going to use the funcion profviz that will show how much memory and how much time each chunk of code takes to run. 
 
 
-```{r}
-library(profvis)
-library(shiny)
-
-#Uncoment and run
+```{r eval=FALSE, include=TRUE}
+library(profvis,quietly = T)
+library(shiny,quietly = T)
 
 #After your app pops up, play with it and make it work so that the function can capture how much time each task take to run.
 
-# Initial_Profile <- profvis(runApp(appDir="app.R"))
+Initial_Profile <- profvis(runApp(appDir="app.R"))
+Initial_Profile
+```
 
-# Initial_Profile
-# htmlwidgets::saveWidget(Initial_Profile, "Initial_Profile.html")
+Looking at our [Initial_Profile,](https://rpubs.com/Rayland/Init_Profile) we can see that our App takes 5930ms to initialize, 630ms to run the output$densidades for the first time and 2480ms for the second.
+What we can also see is that it took 2670.7MB of RAM to initialize, wich by itself would turn our dream to upload it on a free 1GB server into ashes.
+
+Starting the optimization with the initialization seems to be our best choice in this situation, so lets get started.
+
+## Optimizing initialization
+
+If we look at our app, we see that at the beginning we build the complete data set that we are going to use.
+
+```{r}
+
+camara=bind_rows(list(camara2009,
+                    camara2010,
+                    camara2011,
+                    camara2012,
+                    camara2013,
+                    camara2014,
+                    camara2015,
+                    camara2016,
+                    camara2017,
+                    camara2018,
+                    camara2019)
+                 ) %>%
+  filter(total_net_value>0) %>%
+  data.frame(check.names = F) %>% 
+  filter(!is.na(total_net_value)&!is.na(document_value)) 
 
 ```
 
-Looking at our [Initial profile,](./Initial_Profile.html) we can see that our App takes 5930ms to initialize, 630ms to run the output$densidades for the first time and 2480ms for the second.
-What we can also see is that it took 2670.7MB of RAM to initialize, wich by itself would turn our dream to upload it on a free server into ashes.
+So, why not doing this data processing outside the app? 
 
-Starting the optimization with the optimization with the initialization seems to be our best choice in this situation, so lets get started.
+```{r}
 
+save(camara,file="camara")
+
+```
+
+Now, all we have to do is load the pre processed data into our app with the command `load("camara")`.
+
+Lets check the performance of our app now:
+
+```{r eval=FALSE, include=TRUE}
+Second_Profile <- profvis(runApp(appDir="app.R"))
+Second_Profile
+
+```
+
+Looking at the [Second_Profile,](https://rpubs.com/Rayland/Init_Profile) we can see that our app took 3560ms to start and 751.3MB of RAM to run and it can already be uploaded to a free server. Or can it?
+
+
+I'm going to update this notebook very soon with more optimization techniques.
+Thanks for reading.
