@@ -72,7 +72,7 @@ Second_Profile
 
 ```
 
-Looking at the [Second_Profile,](https://rpubs.com/Rayland/Init_Profile) we can see that our app took 3560ms to start and 751.3MB of RAM to run and it can already be uploaded to a free server. Or can it?
+Looking at the [Second_Profile,](https://rpubs.com/Rayland/Second_Profile) we can see that our app took 3560ms to start and 751.3MB of RAM to run and it can already be uploaded to a free server. Or can it?
 
 
 I'm going to update this notebook very soon with more optimization techniques.
